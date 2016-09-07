@@ -1,18 +1,15 @@
 require 'rubygems'
 require 'cinch'
 require 'osc-ruby'
-#require 'zaru'
 
   def sanitize_filename(filename)
     filename.gsub(/[^0-9A-z.\-]/, '_')
   end
 
-#@client = OSC::Client.new( 'localhost', 7133 )
   def start_machine (m)
     m.reply("Starting Recording")
     start = "oscsend localhost 7133 /start"
     system(start)
-#    @client.send(OSC::Message.new("/start", true))
   end
 
   def stop_machine_custom (m)
@@ -24,19 +21,17 @@ require 'osc-ruby'
     else
       m.reply("Stop Recording")
     end
-#    puts name
-#    m.reply("Stop Recording")
     stop = "oscsend localhost 7133 /stop"
     system(stop)
     spam = Dir.glob(save_location + "/*").max_by {|f| File.mtime(f)}
     File.rename(spam,name)
     convert2mp3(name)
 #delete here
+    File.delete(name)
     spam = Dir.glob(save_location + "/*").max_by {|f| File.mtime(f)}
     m.reply("Converting to MP3")
     spam = spam.split('/').last
     m.reply(url + spam)
-#    @client.send(OSC::Message.new("/stop", "mada"))
   end
 
   def stop_machine (m)
@@ -46,18 +41,15 @@ require 'osc-ruby'
     spam = Dir.glob(save_location + "/*").max_by {|f| File.mtime(f)}
     convert2mp3(spam)
 #delete here
+    File.delete(spam)
     spam = Dir.glob(save_location + "/*").max_by {|f| File.mtime(f)}
     m.reply("Converting to MP3")
     spam = spam.split('/').last
     m.reply(url + spam)
-#    @client.send(OSC::Message.new("/stop", "mada"))
   end
 
   def convert2mp3 (f)
-#    file = open(f)
-#    puts f
     `ffmpeg -i #{f} -f mp3 #{f}.mp3`
-#    return f
   end
 
 save_location = ''
@@ -79,6 +71,11 @@ IO.foreach("config") do |line|
   when /^./; puts "#{key}: unknown key"
   end
 end
+
+puts "#{save_location}"
+puts url
+puts irc_server
+puts irc_channel
 
 bot = Cinch::Bot.new do
   configure do |c|

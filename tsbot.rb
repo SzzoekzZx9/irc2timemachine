@@ -18,7 +18,7 @@ require 'osc-ruby'
   def stop_machine_custom (m)
     name = m.message.split(' ')[1]
     name = sanitize_filename(name)
-    name = "/mnt/data3/strim/tsbot/" + name
+    name = save_location + name
     if File.exists?(name)
       m.reply("Already Exists, pls again")
     else
@@ -28,14 +28,14 @@ require 'osc-ruby'
 #    m.reply("Stop Recording")
     stop = "oscsend localhost 7133 /stop"
     system(stop)
-    spam = Dir.glob("/mnt/data3/strim/tsbot/*").max_by {|f| File.mtime(f)}
+    spam = Dir.glob(save_location + "/*").max_by {|f| File.mtime(f)}
     File.rename(spam,name)
     convert2mp3(name)
 #delete here
-    spam = Dir.glob("/mnt/data3/strim/tsbot/*").max_by {|f| File.mtime(f)}
+    spam = Dir.glob(save_location + "/*").max_by {|f| File.mtime(f)}
     m.reply("Converting to MP3")
     spam = spam.split('/').last
-    m.reply("http://themutedheart.com:3000/"+spam)
+    m.reply(url + spam)
 #    @client.send(OSC::Message.new("/stop", "mada"))
   end
 
@@ -43,17 +43,15 @@ require 'osc-ruby'
     m.reply("Stop Recording")
     stop = "oscsend localhost 7133 /stop"
     system(stop)
-    spam = Dir.glob("/mnt/data3/strim/tsbot/*").max_by {|f| File.mtime(f)}
+    spam = Dir.glob(save_location + "/*").max_by {|f| File.mtime(f)}
     convert2mp3(spam)
 #delete here
-    spam = Dir.glob("/mnt/data3/strim/tsbot/*").max_by {|f| File.mtime(f)}
+    spam = Dir.glob(save_location + "/*").max_by {|f| File.mtime(f)}
     m.reply("Converting to MP3")
     spam = spam.split('/').last
-    m.reply("http://themutedheart.com:3000/"+spam)
+    m.reply(url + spam)
 #    @client.send(OSC::Message.new("/stop", "mada"))
   end
-
-
 
   def convert2mp3 (f)
 #    file = open(f)
@@ -62,11 +60,31 @@ require 'osc-ruby'
 #    return f
   end
 
+save_location = ''
+url = ''
+irc_server = ''
+irc_channel = ''
+nickname = ''
+
+IO.foreach("config") do |line|
+  line.chomp!
+  key, value = line.split(nil, 2)
+  case key
+  when /^([#;]|$)/; #Ignore line
+  when "SAVELOCATION"; save_location = value
+  when "URL"; url = value
+  when "IRCSERVER"; irc_server = value
+  when "IRCCHANNEL"; irc_channel = "#" + value
+  when "NICKNAME"; nickname = value
+  when /^./; puts "#{key}: unknown key"
+  end
+end
+
 bot = Cinch::Bot.new do
   configure do |c|
-    c.server = "chat.freenode.net"
-    c.channels = ["#vapelounge"]
-    c.nick = "TeamspeakBot"
+    c.server = irc_server
+    c.channels = [irc_channel]
+    c.nick = nickname
   end
 
   on :message do |m|

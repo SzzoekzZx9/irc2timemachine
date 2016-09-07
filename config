@@ -4,15 +4,15 @@
 SAVELOCATION /mnt/data3/strim/tsbot
 
 #The URL the file will be accessible from (DO include the trailing /)
-URL http://themutedheart.com:3000/
+URL http://webite.com:3000/
 
 #The IRC server to connect to
 IRCSERVER irc.freenode.net
 
-#The channel to join
-IRCCHANNEL vapelounge
+#The channel to join (Do not include #)
+IRCCHANNEL channel
 
 #The Bot's name on IRC
-NICKNAME tsbot
+NICKNAME bot
 
 : 

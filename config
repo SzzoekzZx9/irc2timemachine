@@ -4,7 +4,7 @@
 SAVELOCATION /mnt/data/bothome/bot
 
 #The URL the file will be accessible from (DO include the trailing /)
-URL http://webite.com:3000/
+URL http://website.com:3000/
 
 #The IRC server to connect to
 IRCSERVER irc.freenode.net

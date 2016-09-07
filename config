@@ -1,0 +1,18 @@
+#Config file for the IRC2Timemachine interface
+
+#This is the location for the audio saved by Timemachine (do not include the trailing /)
+SAVELOCATION /mnt/data3/strim/tsbot
+
+#The URL the file will be accessible from (DO include the trailing /)
+URL http://themutedheart.com:3000/
+
+#The IRC server to connect to
+IRCSERVER irc.freenode.net
+
+#The channel to join
+IRCCHANNEL vapelounge
+
+#The Bot's name on IRC
+NICKNAME tsbot
+
+: 
